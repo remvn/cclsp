@@ -283,9 +283,58 @@ export const findReferencesStrictTool: ToolDefinition = {
   },
 };
 
+export const findDefinitionStrictTool: ToolDefinition = {
+  name: 'find_definition_strict',
+  description:
+    'Find the definition of a symbol at an exact line/character position. Unlike `find_definition`, this does not look up by symbol name — the caller must supply the precise position.',
+  inputSchema: {
+    type: 'object',
+    properties: {
+      file_path: {
+        type: 'string',
+        description: 'The path to the file',
+      },
+      line: {
+        type: 'number',
+        description: 'The line number (0-indexed)',
+      },
+      character: {
+        type: 'number',
+        description: 'The character position in the line (0-indexed)',
+      },
+    },
+    required: ['file_path', 'line', 'character'],
+  },
+  handler: async (args, client) => {
+    const { file_path, line, character } = args as {
+      file_path: string;
+      line: number;
+      character: number;
+    };
+    const absolutePath = resolvePath(file_path);
+
+    try {
+      const locations = await client.findDefinition(absolutePath, { line, character });
+
+      if (locations.length === 0) {
+        return textResult(`No definition found at ${file_path}:${line}:${character}`);
+      }
+
+      const locationList = formatLocations(locations);
+
+      return textResult(`Found ${locations.length} definition(s):\n\n${locationList}`);
+    } catch (error) {
+      return textResult(
+        `Error finding definition: ${error instanceof Error ? error.message : String(error)}`
+      );
+    }
+  },
+};
+
 export const navigationTools: ToolDefinition[] = [
   findDefinitionTool,
   findReferencesTool,
   findImplementationTool,
   findReferencesStrictTool,
+  findDefinitionStrictTool,
 ];
