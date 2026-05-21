@@ -220,8 +220,72 @@ export const findImplementationTool: ToolDefinition = {
   },
 };
 
+export const findReferencesStrictTool: ToolDefinition = {
+  name: 'find_references_strict',
+  description:
+    'Find all references to a symbol at an exact line/character position. Unlike `find_references`, this does not look up by symbol name — the caller must supply the precise position.',
+  inputSchema: {
+    type: 'object',
+    properties: {
+      file_path: {
+        type: 'string',
+        description: 'The path to the file',
+      },
+      line: {
+        type: 'number',
+        description: 'The line number (1-indexed)',
+      },
+      character: {
+        type: 'number',
+        description: 'The character position in the line (1-indexed)',
+      },
+      include_declaration: {
+        type: 'boolean',
+        description: 'Whether to include the declaration',
+        default: true,
+      },
+    },
+    required: ['file_path', 'line', 'character'],
+  },
+  handler: async (args, client) => {
+    const {
+      file_path,
+      line,
+      character,
+      include_declaration = true,
+    } = args as {
+      file_path: string;
+      line: number;
+      character: number;
+      include_declaration?: boolean;
+    };
+    const absolutePath = resolvePath(file_path);
+
+    try {
+      const locations = await client.findReferences(
+        absolutePath,
+        { line: line - 1, character: character - 1 },
+        include_declaration
+      );
+
+      if (locations.length === 0) {
+        return textResult(`No references found at ${file_path}:${line}:${character}`);
+      }
+
+      const locationList = formatLocations(locations);
+
+      return textResult(`Found ${locations.length} reference(s):\n\n${locationList}`);
+    } catch (error) {
+      return textResult(
+        `Error finding references: ${error instanceof Error ? error.message : String(error)}`
+      );
+    }
+  },
+};
+
 export const navigationTools: ToolDefinition[] = [
   findDefinitionTool,
   findReferencesTool,
   findImplementationTool,
+  findReferencesStrictTool,
 ];
