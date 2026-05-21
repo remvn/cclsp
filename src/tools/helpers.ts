@@ -12,7 +12,7 @@ export function formatLocations(locations: Location[]): string {
     .map((loc) => {
       const filePath = uriToPath(loc.uri);
       const { start } = loc.range;
-      return `${filePath}:${start.line + 1}:${start.character + 1}`;
+      return `${filePath}:${start.line}:${start.character}`;
     })
     .join('\n');
 }

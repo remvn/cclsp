@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+
+- **BREAKING: Position parameters are now 0-indexed** across all MCP tools
+  - Tools that accept `line`/`character` inputs (`find_implementation`, `find_references_strict`, `rename_symbol_strict`, `get_hover`, `prepare_call_hierarchy`, `get_incoming_calls`, `get_outgoing_calls`) now expect 0-indexed values, matching the LSP wire protocol directly
+  - Formatted output positions (e.g. `file.ts:10:5`, `Line 10, Column 5`) are also 0-indexed
+  - The internal `- 1` / `+ 1` translation layer between MCP and LSP has been removed
+
 ## [0.6.1] - 2025-10-20
 
 ### Enhanced
@@ -66,7 +75,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - **MCP Command Argument Order**: Fixed `claude mcp add` command argument order
-
   - Corrected to: `claude mcp add cclsp <command> [args...] --env <env>`
   - Server name and command are now properly positioned as positional arguments
   - Options are placed after the command as required by the CLI
@@ -82,13 +90,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - **Claude CLI Fallback**: Setup script now falls back to `npx @anthropic-ai/claude-code@latest` when Claude CLI is not installed
-
   - Automatically detects if `claude` command is available
   - Uses npx to run Claude commands without requiring global installation
   - Improves setup experience for users without Claude CLI installed
 
 - **MCP Command Syntax**: Fixed incorrect argument order in MCP add command
-
   - Options (`--env`, `--scope`) now correctly placed before server name
   - Resolves "unknown option '--env'" error
   - Commands now follow proper Claude MCP CLI syntax

@@ -412,6 +412,7 @@ Rename a symbol by name and kind in a file. **This tool now applies the rename t
 - `dry_run`: If true, only preview the changes without applying them (optional, default: false)
 
 **Note:** When `dry_run` is false (default), the tool will:
+
 - Apply the rename to all affected files
 - Create backup files with `.bak` extension
 - Return the list of modified files
@@ -423,8 +424,8 @@ Rename a symbol at a specific position in a file. Use this when rename_symbol re
 **Parameters:**
 
 - `file_path`: The path to the file
-- `line`: The line number (1-indexed)
-- `character`: The character position in the line (1-indexed)
+- `line`: The line number (0-indexed)
+- `character`: The character position in the line (0-indexed)
 - `new_name`: The new name for the symbol
 - `dry_run`: If true, only preview the changes without applying them (optional, default: false)
 
@@ -433,6 +434,7 @@ Rename a symbol at a specific position in a file. Use this when rename_symbol re
 Get language diagnostics (errors, warnings, hints) for a file. Uses LSP textDocument/diagnostic to pull current diagnostics.
 
 **Parameters:**
+
 - `file_path`: The path to the file to get diagnostics for
 
 ### `restart_server`
@@ -440,6 +442,7 @@ Get language diagnostics (errors, warnings, hints) for a file. Uses LSP textDocu
 Manually restart LSP servers. Can restart servers for specific file extensions or all running servers.
 
 **Parameters:**
+
 - `extensions`: Array of file extensions to restart servers for (e.g., ["ts", "tsx"]). If not provided, all servers will be restarted (optional)
 
 ## 💡 Real-world Examples
@@ -496,9 +499,9 @@ Claude: Let me first preview what will be renamed
 
 Result: [DRY RUN] Would rename getUserData (function) to "fetchUserProfile":
 File: src/api/user.ts
-  - Line 55, Column 10 to Line 55, Column 21: "fetchUserProfile"
+  - Line 54, Column 9 to Line 54, Column 20: "fetchUserProfile"
 File: src/services/auth.ts
-  - Line 123, Column 15 to Line 123, Column 26: "fetchUserProfile"
+  - Line 122, Column 14 to Line 122, Column 25: "fetchUserProfile"
 ... (12 files total)
 ```
 
@@ -509,13 +512,13 @@ Claude: I'll rename the `data` variable to `userData`
 > Using cclsp.rename_symbol with symbol_name="data", new_name="userData"
 
 Result: Multiple symbols found matching "data". Please use rename_symbol_strict with one of these positions:
-- data (variable) at line 45, character 10
-- data (parameter) at line 89, character 25
-- data (property) at line 112, character 5
+- data (variable) at line 44, character 9
+- data (parameter) at line 88, character 24
+- data (property) at line 111, character 4
 
-> Using cclsp.rename_symbol_strict with line=45, character=10, new_name="userData"
+> Using cclsp.rename_symbol_strict with line=44, character=9, new_name="userData"
 
-Result: Successfully renamed symbol at line 45, character 10 to "userData".
+Result: Successfully renamed symbol at line 44, character 9 to "userData".
 
 Modified files:
 - src/utils/parser.ts
@@ -530,9 +533,9 @@ Claude: Let me check for any errors or warnings in this file
 > Using cclsp.get_diagnostics
 
 Results: Found 3 diagnostics:
-- Error [TS2304]: Cannot find name 'undefinedVar' (Line 10, Column 5)
-- Warning [no-unused-vars]: 'config' is defined but never used (Line 25, Column 10)
-- Hint: Consider using const instead of let (Line 30, Column 1)
+- Error [TS2304]: Cannot find name 'undefinedVar' (Line 9, Column 4)
+- Warning [no-unused-vars]: 'config' is defined but never used (Line 24, Column 9)
+- Hint: Consider using const instead of let (Line 29, Column 0)
 ```
 
 ### Restarting LSP Servers
@@ -570,6 +573,7 @@ Restarted servers:
 **Problem**: The Python Language Server (pylsp) may become slow or unresponsive after extended use (several hours), affecting symbol resolution and code navigation.
 
 **Symptoms**:
+
 - Slow or missing "go to definition" results for Python files
 - Delayed or incomplete symbol references
 - General responsiveness issues with Python code analysis
@@ -593,6 +597,7 @@ Add `restartInterval` to your Python server configuration:
 This will automatically restart the Python LSP server every 5 minutes, maintaining optimal performance for long coding sessions.
 
 **Alternative**: You can also manually restart servers using the `restart_server` tool when needed:
+
 - Restart specific server: `restart_server` with `extensions: ["py"]`
 - Restart all servers: `restart_server` without parameters
 

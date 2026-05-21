@@ -65,7 +65,7 @@ export const renameSymbolTool: ToolDefinition = {
       const candidatesList = symbolMatches
         .map(
           (match) =>
-            `- ${match.name} (${client.symbolKindToString(match.kind)}) at line ${match.position.line + 1}, character ${match.position.character + 1}`
+            `- ${match.name} (${client.symbolKindToString(match.kind)}) at line ${match.position.line}, character ${match.position.character}`
         )
         .join('\n');
 
@@ -93,14 +93,16 @@ export const renameSymbolTool: ToolDefinition = {
           for (const edit of edits) {
             const { start, end } = edit.range;
             changes.push(
-              `  - Line ${start.line + 1}, Column ${start.character + 1} to Line ${end.line + 1}, Column ${end.character + 1}: "${edit.newText}"`
+              `  - Line ${start.line}, Column ${start.character} to Line ${end.line}, Column ${end.character}: "${edit.newText}"`
             );
           }
         }
 
         // Apply changes if not in dry run mode
         if (!dry_run) {
-          const editResult = await applyWorkspaceEdit(workspaceEdit, { lspClient: client });
+          const editResult = await applyWorkspaceEdit(workspaceEdit, {
+            lspClient: client,
+          });
 
           if (!editResult.success) {
             return textResult(`Failed to apply rename: ${editResult.error}`);
@@ -148,11 +150,11 @@ export const renameSymbolStrictTool: ToolDefinition = {
       },
       line: {
         type: 'number',
-        description: 'The line number (1-indexed)',
+        description: 'The line number (0-indexed)',
       },
       character: {
         type: 'number',
-        description: 'The character position in the line (1-indexed)',
+        description: 'The character position in the line (0-indexed)',
       },
       new_name: {
         type: 'string',
@@ -182,11 +184,7 @@ export const renameSymbolStrictTool: ToolDefinition = {
     const absolutePath = resolvePath(file_path);
 
     try {
-      const workspaceEdit = await client.renameSymbol(
-        absolutePath,
-        { line: line - 1, character: character - 1 },
-        new_name
-      );
+      const workspaceEdit = await client.renameSymbol(absolutePath, { line, character }, new_name);
 
       if (workspaceEdit?.changes && Object.keys(workspaceEdit.changes).length > 0) {
         const changes = [];
@@ -196,14 +194,16 @@ export const renameSymbolStrictTool: ToolDefinition = {
           for (const edit of edits) {
             const { start, end } = edit.range;
             changes.push(
-              `  - Line ${start.line + 1}, Column ${start.character + 1} to Line ${end.line + 1}, Column ${end.character + 1}: "${edit.newText}"`
+              `  - Line ${start.line}, Column ${start.character} to Line ${end.line}, Column ${end.character}: "${edit.newText}"`
             );
           }
         }
 
         // Apply changes if not in dry run mode
         if (!dry_run) {
-          const editResult = await applyWorkspaceEdit(workspaceEdit, { lspClient: client });
+          const editResult = await applyWorkspaceEdit(workspaceEdit, {
+            lspClient: client,
+          });
 
           if (!editResult.success) {
             return textResult(`Failed to apply rename: ${editResult.error}`);

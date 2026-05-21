@@ -41,7 +41,7 @@ export const getDiagnosticsTool: ToolDefinition = {
         const source = diag.source ? ` (${diag.source})` : '';
         const { start, end } = diag.range;
 
-        return `• ${severity}${code}${source}: ${diag.message}\n  Location: Line ${start.line + 1}, Column ${start.character + 1} to Line ${end.line + 1}, Column ${end.character + 1}`;
+        return `• ${severity}${code}${source}: ${diag.message}\n  Location: Line ${start.line}, Column ${start.character} to Line ${end.line}, Column ${end.character}`;
       });
 
       return textResult(

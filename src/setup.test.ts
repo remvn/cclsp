@@ -245,10 +245,22 @@ describe('setup CLI integration', () => {
 describe('Path execution tests', () => {
   test('should handle actual file system paths', () => {
     const testCases = [
-      { path: '/tmp/test project/config.json', platform: 'darwin' as NodeJS.Platform },
-      { path: 'C:\\Program Files\\My App\\config.json', platform: 'win32' as NodeJS.Platform },
-      { path: '/home/user/.config/claude/cclsp.json', platform: 'linux' as NodeJS.Platform },
-      { path: 'C:\\Users\\test\\AppData\\cclsp.json', platform: 'win32' as NodeJS.Platform },
+      {
+        path: '/tmp/test project/config.json',
+        platform: 'darwin' as NodeJS.Platform,
+      },
+      {
+        path: 'C:\\Program Files\\My App\\config.json',
+        platform: 'win32' as NodeJS.Platform,
+      },
+      {
+        path: '/home/user/.config/claude/cclsp.json',
+        platform: 'linux' as NodeJS.Platform,
+      },
+      {
+        path: 'C:\\Users\\test\\AppData\\cclsp.json',
+        platform: 'win32' as NodeJS.Platform,
+      },
     ];
 
     for (const { path, platform } of testCases) {

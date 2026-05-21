@@ -29,7 +29,7 @@ export const findWorkspaceSymbolsTool: ToolDefinition = {
       const symbolList = symbols.map((sym) => {
         const filePath = uriToPath(sym.location.uri);
         const { start } = sym.location.range;
-        return `• ${sym.name} (${client.symbolKindToString(sym.kind)}) at ${filePath}:${start.line + 1}:${start.character + 1}`;
+        return `• ${sym.name} (${client.symbolKindToString(sym.kind)}) at ${filePath}:${start.line}:${start.character}`;
       });
 
       return textResult(
@@ -56,11 +56,11 @@ export const prepareCallHierarchyTool: ToolDefinition = {
       },
       line: {
         type: 'number',
-        description: 'The line number (1-indexed)',
+        description: 'The line number (0-indexed)',
       },
       character: {
         type: 'number',
-        description: 'The character position in the line (1-indexed)',
+        description: 'The character position in the line (0-indexed)',
       },
     },
     required: ['file_path', 'line', 'character'],
@@ -75,8 +75,8 @@ export const prepareCallHierarchyTool: ToolDefinition = {
 
     try {
       const items = await client.prepareCallHierarchy(absolutePath, {
-        line: line - 1,
-        character: character - 1,
+        line,
+        character,
       });
 
       if (items.length === 0) {
@@ -86,7 +86,7 @@ export const prepareCallHierarchyTool: ToolDefinition = {
       const itemList = items.map((item) => {
         const filePath = uriToPath(item.uri);
         const { start } = item.selectionRange;
-        return `• ${item.name} (${client.symbolKindToString(item.kind)}) at ${filePath}:${start.line + 1}:${start.character + 1}${item.detail ? ` - ${item.detail}` : ''}`;
+        return `• ${item.name} (${client.symbolKindToString(item.kind)}) at ${filePath}:${start.line}:${start.character}${item.detail ? ` - ${item.detail}` : ''}`;
       });
 
       return textResult(
@@ -113,11 +113,11 @@ export const getIncomingCallsTool: ToolDefinition = {
       },
       line: {
         type: 'number',
-        description: 'The line number (1-indexed)',
+        description: 'The line number (0-indexed)',
       },
       character: {
         type: 'number',
-        description: 'The character position in the line (1-indexed)',
+        description: 'The character position in the line (0-indexed)',
       },
     },
     required: ['file_path', 'line', 'character'],
@@ -132,8 +132,8 @@ export const getIncomingCallsTool: ToolDefinition = {
 
     try {
       const items = await client.prepareCallHierarchy(absolutePath, {
-        line: line - 1,
-        character: character - 1,
+        line,
+        character,
       });
 
       if (items.length === 0) {
@@ -147,7 +147,7 @@ export const getIncomingCallsTool: ToolDefinition = {
           const filePath = uriToPath(call.from.uri);
           const { start } = call.from.selectionRange;
           allCalls.push(
-            `• ${call.from.name} (${client.symbolKindToString(call.from.kind)}) at ${filePath}:${start.line + 1}:${start.character + 1}`
+            `• ${call.from.name} (${client.symbolKindToString(call.from.kind)}) at ${filePath}:${start.line}:${start.character}`
           );
         }
       }
@@ -180,11 +180,11 @@ export const getOutgoingCallsTool: ToolDefinition = {
       },
       line: {
         type: 'number',
-        description: 'The line number (1-indexed)',
+        description: 'The line number (0-indexed)',
       },
       character: {
         type: 'number',
-        description: 'The character position in the line (1-indexed)',
+        description: 'The character position in the line (0-indexed)',
       },
     },
     required: ['file_path', 'line', 'character'],
@@ -199,8 +199,8 @@ export const getOutgoingCallsTool: ToolDefinition = {
 
     try {
       const items = await client.prepareCallHierarchy(absolutePath, {
-        line: line - 1,
-        character: character - 1,
+        line,
+        character,
       });
 
       if (items.length === 0) {
@@ -214,7 +214,7 @@ export const getOutgoingCallsTool: ToolDefinition = {
           const filePath = uriToPath(call.to.uri);
           const { start } = call.to.selectionRange;
           allCalls.push(
-            `• ${call.to.name} (${client.symbolKindToString(call.to.kind)}) at ${filePath}:${start.line + 1}:${start.character + 1}`
+            `• ${call.to.name} (${client.symbolKindToString(call.to.kind)}) at ${filePath}:${start.line}:${start.character}`
           );
         }
       }

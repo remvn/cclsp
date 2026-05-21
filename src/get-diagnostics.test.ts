@@ -56,7 +56,7 @@ describe('get_diagnostics MCP tool', () => {
 
     expect(result.content[0]?.text).toContain('Found 1 diagnostic in test.ts:');
     expect(result.content[0]?.text).toContain('Error [TS2304] (typescript): Undefined variable');
-    expect(result.content[0]?.text).toContain('Location: Line 1, Column 6 to Line 1, Column 11');
+    expect(result.content[0]?.text).toContain('Location: Line 0, Column 5 to Line 0, Column 10');
   });
 
   it('should format multiple diagnostics correctly', async () => {
@@ -154,7 +154,7 @@ describe('get_diagnostics MCP tool', () => {
     expect(result.content[0]?.text).toBe('Error getting diagnostics: Unknown error');
   });
 
-  it('should convert 0-indexed line and character to 1-indexed for display', async () => {
+  it('should display 0-indexed line and character positions', async () => {
     const mockDiagnostics: Diagnostic[] = [
       {
         range: {
@@ -170,6 +170,6 @@ describe('get_diagnostics MCP tool', () => {
 
     const result = await callHandler({ file_path: 'test.ts' }, mockClient);
 
-    expect(result.content[0]?.text).toContain('Location: Line 1, Column 1 to Line 1, Column 1');
+    expect(result.content[0]?.text).toContain('Location: Line 0, Column 0 to Line 0, Column 0');
   });
 });

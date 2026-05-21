@@ -58,7 +58,7 @@ export const findDefinitionTool: ToolDefinition = {
         if (locations.length > 0) {
           const locationResults = formatLocations(locations);
           results.push(
-            `Results for ${match.name} (${client.symbolKindToString(match.kind)}) at ${file_path}:${match.position.line + 1}:${match.position.character + 1}:\n${locationResults}`
+            `Results for ${match.name} (${client.symbolKindToString(match.kind)}) at ${file_path}:${match.position.line}:${match.position.character}:\n${locationResults}`
           );
         } else {
           logger.debug(
@@ -148,7 +148,7 @@ export const findReferencesTool: ToolDefinition = {
         if (locations.length > 0) {
           const locationResults = formatLocations(locations);
           results.push(
-            `Results for ${match.name} (${client.symbolKindToString(match.kind)}) at ${file_path}:${match.position.line + 1}:${match.position.character + 1}:\n${locationResults}`
+            `Results for ${match.name} (${client.symbolKindToString(match.kind)}) at ${file_path}:${match.position.line}:${match.position.character}:\n${locationResults}`
           );
         }
       } catch (_error) {
@@ -182,11 +182,11 @@ export const findImplementationTool: ToolDefinition = {
       },
       line: {
         type: 'number',
-        description: 'The line number (1-indexed)',
+        description: 'The line number (0-indexed)',
       },
       character: {
         type: 'number',
-        description: 'The character position in the line (1-indexed)',
+        description: 'The character position in the line (0-indexed)',
       },
     },
     required: ['file_path', 'line', 'character'],
@@ -201,8 +201,8 @@ export const findImplementationTool: ToolDefinition = {
 
     try {
       const locations = await client.findImplementation(absolutePath, {
-        line: line - 1,
-        character: character - 1,
+        line,
+        character,
       });
 
       if (locations.length === 0) {
@@ -233,11 +233,11 @@ export const findReferencesStrictTool: ToolDefinition = {
       },
       line: {
         type: 'number',
-        description: 'The line number (1-indexed)',
+        description: 'The line number (0-indexed)',
       },
       character: {
         type: 'number',
-        description: 'The character position in the line (1-indexed)',
+        description: 'The character position in the line (0-indexed)',
       },
       include_declaration: {
         type: 'boolean',
@@ -264,7 +264,7 @@ export const findReferencesStrictTool: ToolDefinition = {
     try {
       const locations = await client.findReferences(
         absolutePath,
-        { line: line - 1, character: character - 1 },
+        { line, character },
         include_declaration
       );
 

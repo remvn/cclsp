@@ -40,7 +40,7 @@ describe('Position-based Tool Handlers', () => {
   });
 
   describe('find_implementation', () => {
-    it('should convert 1-indexed input to 0-indexed LSP position', async () => {
+    it('should pass 0-indexed input directly to LSP', async () => {
       mockClient.findImplementation.mockResolvedValue([
         {
           uri: pathToUri(SRC_IMPL),
@@ -52,7 +52,7 @@ describe('Position-based Tool Handlers', () => {
       ]);
 
       await findImplementationTool.handler(
-        { file_path: 'test.ts', line: 5, character: 10 },
+        { file_path: 'test.ts', line: 4, character: 9 },
         asClient(mockClient)
       );
 
@@ -62,7 +62,7 @@ describe('Position-based Tool Handlers', () => {
       });
     });
 
-    it('should format implementation locations with 1-indexed output', async () => {
+    it('should format implementation locations with 0-indexed output', async () => {
       mockClient.findImplementation.mockResolvedValue([
         {
           uri: pathToUri(SRC_IMPL1),
@@ -81,24 +81,24 @@ describe('Position-based Tool Handlers', () => {
       ]);
 
       const result = await findImplementationTool.handler(
-        { file_path: 'test.ts', line: 1, character: 1 },
+        { file_path: 'test.ts', line: 0, character: 0 },
         asClient(mockClient)
       );
 
       expect(result.content[0]?.text).toContain('Found 2 implementation(s)');
-      expect(result.content[0]?.text).toContain(`${uriToPath(pathToUri(SRC_IMPL1))}:6:1`);
-      expect(result.content[0]?.text).toContain(`${uriToPath(pathToUri(SRC_IMPL2))}:11:5`);
+      expect(result.content[0]?.text).toContain(`${uriToPath(pathToUri(SRC_IMPL1))}:5:0`);
+      expect(result.content[0]?.text).toContain(`${uriToPath(pathToUri(SRC_IMPL2))}:10:4`);
     });
 
     it('should return message when no implementations found', async () => {
       mockClient.findImplementation.mockResolvedValue([]);
 
       const result = await findImplementationTool.handler(
-        { file_path: 'test.ts', line: 5, character: 10 },
+        { file_path: 'test.ts', line: 4, character: 9 },
         asClient(mockClient)
       );
 
-      expect(result.content[0]?.text).toContain('No implementations found at test.ts:5:10');
+      expect(result.content[0]?.text).toContain('No implementations found at test.ts:4:9');
     });
 
     it('should handle errors from findImplementation', async () => {
@@ -114,11 +114,11 @@ describe('Position-based Tool Handlers', () => {
       );
     });
 
-    it('should handle line 1, character 1 correctly (converts to 0, 0)', async () => {
+    it('should handle line 0, character 0 correctly (passes through as 0, 0)', async () => {
       mockClient.findImplementation.mockResolvedValue([]);
 
       await findImplementationTool.handler(
-        { file_path: 'test.ts', line: 1, character: 1 },
+        { file_path: 'test.ts', line: 0, character: 0 },
         asClient(mockClient)
       );
 
@@ -130,7 +130,7 @@ describe('Position-based Tool Handlers', () => {
   });
 
   describe('rename_symbol_strict', () => {
-    it('should convert 1-indexed input to 0-indexed LSP position', async () => {
+    it('should pass 0-indexed input directly to LSP', async () => {
       mockClient.renameSymbol.mockResolvedValue({
         changes: {
           [pathToUri(SRC_TEST)]: [
@@ -148,8 +148,8 @@ describe('Position-based Tool Handlers', () => {
       await renameSymbolStrictTool.handler(
         {
           file_path: 'test.ts',
-          line: 5,
-          character: 10,
+          line: 4,
+          character: 9,
           new_name: 'newName',
           dry_run: true,
         },
@@ -181,8 +181,8 @@ describe('Position-based Tool Handlers', () => {
       const result = await renameSymbolStrictTool.handler(
         {
           file_path: 'test.ts',
-          line: 6,
-          character: 10,
+          line: 5,
+          character: 9,
           new_name: 'newName',
           dry_run: true,
         },
@@ -191,27 +191,25 @@ describe('Position-based Tool Handlers', () => {
 
       expect(result.content[0]?.text).toContain('[DRY RUN]');
       expect(result.content[0]?.text).toContain('"newName"');
-      expect(result.content[0]?.text).toContain('Line 6, Column 10');
+      expect(result.content[0]?.text).toContain('Line 5, Column 9');
     });
 
     it('should return message when no rename edits available', async () => {
       mockClient.renameSymbol.mockResolvedValue({});
 
       const result = await renameSymbolStrictTool.handler(
-        { file_path: 'test.ts', line: 5, character: 10, new_name: 'newName' },
+        { file_path: 'test.ts', line: 4, character: 9, new_name: 'newName' },
         asClient(mockClient)
       );
 
-      expect(result.content[0]?.text).toContain(
-        'No rename edits available at line 5, character 10'
-      );
+      expect(result.content[0]?.text).toContain('No rename edits available at line 4, character 9');
     });
 
     it('should handle renameSymbol throwing an error', async () => {
       mockClient.renameSymbol.mockRejectedValue(new Error('LSP error'));
 
       const result = await renameSymbolStrictTool.handler(
-        { file_path: 'test.ts', line: 5, character: 10, new_name: 'newName' },
+        { file_path: 'test.ts', line: 4, character: 9, new_name: 'newName' },
         asClient(mockClient)
       );
 
@@ -252,8 +250,8 @@ describe('Position-based Tool Handlers', () => {
       const result = await renameSymbolStrictTool.handler(
         {
           file_path: 'test.ts',
-          line: 1,
-          character: 1,
+          line: 0,
+          character: 0,
           new_name: 'newName',
           dry_run: true,
         },

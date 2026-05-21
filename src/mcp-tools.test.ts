@@ -82,7 +82,7 @@ describe('MCP Tool Handlers', () => {
         asClient(mockClient)
       );
 
-      expect(result.content[0]?.text).toContain(`${uriToPath(pathToUri(SRC_IMPL))}:11:6`);
+      expect(result.content[0]?.text).toContain(`${uriToPath(pathToUri(SRC_IMPL))}:10:5`);
       expect(result.content[0]?.text).toContain('testFunction (function)');
       expect(mockClient.findSymbolsByName).toHaveBeenCalledWith(
         resolve('test.ts'),
@@ -186,7 +186,7 @@ describe('MCP Tool Handlers', () => {
       );
 
       expect(result.content[0]?.text).toContain('No symbols found with kind "class"');
-      expect(result.content[0]?.text).toContain(`${uriToPath(pathToUri(SRC_TEST))}:1:1`);
+      expect(result.content[0]?.text).toContain(`${uriToPath(pathToUri(SRC_TEST))}:0:0`);
     });
 
     it('should handle findDefinition returning empty array', async () => {
@@ -253,8 +253,8 @@ describe('MCP Tool Handlers', () => {
         asClient(mockClient)
       );
 
-      expect(result.content[0]?.text).toContain(`${uriToPath(pathToUri(SRC_TEST))}:4:7`);
-      expect(result.content[0]?.text).toContain(`${uriToPath(pathToUri(SRC_OTHER))}:21:4`);
+      expect(result.content[0]?.text).toContain(`${uriToPath(pathToUri(SRC_TEST))}:3:6`);
+      expect(result.content[0]?.text).toContain(`${uriToPath(pathToUri(SRC_OTHER))}:20:3`);
       expect(result.content[0]?.text).toContain('myVar (variable)');
     });
 

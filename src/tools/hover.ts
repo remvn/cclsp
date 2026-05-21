@@ -14,11 +14,11 @@ export const getHoverTool: ToolDefinition = {
       },
       line: {
         type: 'number',
-        description: 'The line number (1-indexed)',
+        description: 'The line number (0-indexed)',
       },
       character: {
         type: 'number',
-        description: 'The character position in the line (1-indexed)',
+        description: 'The character position in the line (0-indexed)',
       },
     },
     required: ['file_path', 'line', 'character'],
@@ -32,10 +32,7 @@ export const getHoverTool: ToolDefinition = {
     const absolutePath = resolvePath(file_path);
 
     try {
-      const result = await client.hover(absolutePath, {
-        line: line - 1,
-        character: character - 1,
-      });
+      const result = await client.hover(absolutePath, { line, character });
 
       if (!result) {
         return textResult(`No hover information available at ${file_path}:${line}:${character}`);
